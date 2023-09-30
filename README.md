@@ -37,9 +37,87 @@ The virualhost port in the file `/etc/apache2/sites-available/000-default.conf` 
 
 Apache was restarted to load the new configuration using **`sudo systemctl restart apache2`** command
 
+A new index.html file was created and the configuration was inserted into the html file
 
+**`sudo nano index.html`**
 
+```
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>My EC2 Instance</title>
+        </head>
+        <body>
+            <h1>Welcome to my EC2 instance</h1>
+            <p>Public IP: 18.208.198.58</p>
+        </body>
+        </html>
 
+```
 
+The ownership of the index.html was changed with this command: **`sudo chown www-data:www-data ./index.html`**
 
+The default html file of Apache server was override with the command: **`sudo cp -f ./index.html /var/www/html/index.html`**
+
+Apache was restarted to load the new configuration using **`sudo systemctl restart apache2`** command
+
+<img width="436" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/3270e0fd-5344-448b-a815-b6314dcc3fc7">
+
+<img width="956" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/6838950f-7363-4edd-8e2d-77345f3cbc4d">
+
+## Configuring Nginx as Load Balancer
+
+Nginx was installed in the ngnix EC2 server using the command below:
+
+**`sudo apt update -y && sudo apt install nginx -y`**
+
+Nginx installation was verified with the command below:
+
+**`sudo systemctl status nginx`**
+
+<img width="944" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/cae09c33-eab0-4c17-a5dd-0ba56b510465">
+
+Nginx configuration file was opened with the command below:
+
+**`sudo nano /etc/nginx/conf.d/loadbalancer.conf`**
+
+The follwoing configuration was added into the ngnix configuration file so that nginx will act as load balancer.
+
+```
+  
+        upstream backend_servers {
+
+            # your are to replace the public IP and Port to that of your webservers
+            server 18.208.198.58:8000; # public IP and port for webserser 1
+            server 34.235.171.222:8000; # public IP and port for webserver 2
+
+        }
+
+        server {
+            listen 80;
+            server_name 34.229.52.105; # provide your load balancers public IP address
+
+            location / {
+                proxy_pass http://backend_servers;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            }
+        }
+    
+
+```
+
+**upstream backend_servers** defines a group of backend servers. The **server** lines inside the **upstream** block list the addresses and ports of backend servers. 
+**proxy_pass** inside the **location** block sets up the load balancing, passing the requests to the backend servers.  The **proxy_ser_header** lines pass necessary header to the backend servers to correctly handle the request.
+
+The configuration was tested using **`sudo nginx -t`** command.
+
+<img width="422" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/2e471a09-9062-4049-b89f-03702115001f">
+
+Nginx was restarted to load the new configuration using **`sudo systemctl restart nginx`** command
+
+Using the public address of the nginx load balancer, the same webpage served by the webservers can be seen as shown below:
+
+<img width="960" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/39c15fc9-31fd-413a-b280-82eca11329a5">
 
