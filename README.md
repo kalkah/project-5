@@ -20,6 +20,22 @@ Apache was installed on the two webserver using the command below:
 
 <img width="495" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/e2db6215-52d5-4f49-bfdd-80d3c36a1b74">
 
+## Configuring Apache to serve a page showing its public IP
+
+Apache was configured to serve content on port 8000 by editing `/etc/apache2/port.conf` file using nanao text editor
+
+**`sudo nano /etc/apache2/ports.conf`**
+A new Listen directive was added for port 8000
+
+<img width="586" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/ff267a86-8941-4feb-8631-8478422c6d23">
+
+The virualhost port in the file `/etc/apache2/sites-available/000-default.conf` was change from 80 to 8000 using nano text editor
+
+**`sudo vi /etc/apache2/sites-available/000-default.conf`**
+
+<img width="680" alt="image" src="https://github.com/kalkah/project-5/assets/95209274/27e99387-0cae-4879-8342-dd7451365d7c">
+
+Apache was restarted to load the new configuration using **`sudo systemctl restart apache2`** command
 
 
 
